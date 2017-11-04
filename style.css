@@ -1,0 +1,24 @@
+body {
+	background-color: lightgrey;
+}
+
+h1 {
+	text-align: center;
+	font-size: 50px;
+	color: white;
+}
+
+#buttons {
+	background-color: pink;
+	text-align: center;
+}
+
+#addHero {
+	text-align: center;
+	color: white;
+	float: right;
+}
+
+#select-hero {
+	float: center;
+}

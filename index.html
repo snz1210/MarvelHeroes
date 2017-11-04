@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Super Heroes || Saima Zia</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+  <h1>Super Hero Gifs!</h1>
+
+  <div id="buttons"></div>
+
+  <div id="gifs-appear-here"></div>
+
+  <form id="addHero">
+     
+    <label for="hero-input">Add a Hero!</label>
+
+    <input type="text" id="hero-input"><br>
+
+    <button id="select-hero" type="submit">
+    	GO!
+  	</button>
+
+  </form>
+	
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <script type="text/javascript">
+
+
+  $(document).ready(function(){
+
+	var topics = ["ironman", "thor", "captain america", "hulk", "black widow", "hawk eye", "ant-man", "black panther", "spider man"];
+
+// FUNCTION FOR GENERATING BUTTONS FROM LIST OF ARRAY
+	function clickButton()	{
+		for (i = 0; i < topics.length; i++) {
+		$("#buttons").append("<button type='button' value='" + topics[i] + "'>" + topics[i] + "</button>");
+		// <button type = "button" value = "ironman"> ironman </button>
+		}
+	}
+
+	clickButton();
+	
+// FUNCTION FOR MAKING ALL BUTTONS (OLD AND NEW) WORK
+	$(document).on('click', 'button', function() {
+		console.log("Click");
+// grabbing and storing the property value from the button
+		console.log($(this))
+		var hero = $(this).attr("value");
+		console.log(hero);
+
+// creating a queryURL using hero name
+		var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        hero + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+// performing ajax request with queryURL
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+
+// after data comes back from request
+        .done(function(response) {
+        	console.log(queryURL);
+        	console.log(response);
+        	// console.log the name of the function for the parameter response
+
+// storing the data from the AJAX request in the results var
+        	var results = response.data;
+        	// response.data is an array
+
+// looping through each results item
+        	for (var j = 0; j < results.length; j++) {
+
+// creating and storing a div tag
+        		var heroDiv = $("<div>");
+
+// creating a paragraph tag with the results of the item's rating
+        		var displayRating = $("<p>").text("Rating: " + results[j].rating);
+
+// creating and storing an img tage
+        		var heroImage = $("<img class='gif'>");
+
+// setting the src attr of the image to a property pulled off the result item
+		
+        		var animated = results[j].images.fixed_height.url;
+				var still = results[j].images.fixed_height_still.url;
+
+				heroImage.attr("src", still);
+				heroImage.attr("data-still", still);
+				heroImage.attr("data-animate", animated);
+				heroImage.attr("data-state", "still");
+
+
+// appending the p and img tag to the heroDiv
+        		heroDiv.append(displayRating);
+        		heroDiv.append(heroImage);
+
+
+// prepending the heroDiv to the HTML page in the "gifs-appear-here" div
+        		$("#gifs-appear-here").prepend(heroDiv);
+        	}
+        });
+  	});
+
+
+// FUNCTION FOR MAKING GIFS ANIMATE 
+  	$("#gifs-appear-here").on("click", ".gif", function(event){
+	event.preventDefault();
+	
+	// gets the current state of the clicked gif 
+		var state = $(this).attr("data-state");
+	
+	// according to the current state gifs toggle between animate and still 
+		if (state === "still") {
+   		$(this).attr("src", $(this).attr("data-animate"));
+    	$(this).attr("data-state", "animate");
+ 	    } else {
+    	$(this).attr("src", $(this).attr("data-still"));
+   		$(this).attr("data-state", "still");
+  		}
+
+    });
+
+// FUNCTION FOR MAKING ADD HERO BUTTON WORK
+	$("#select-hero").on('click', function(event) {
+// preventing the button from trying to submit the form
+		event.preventDefault();
+// storing the hero name
+		var inputHero = $("#hero-input").val().trim();
+
+		console.log(inputHero);
+// pushing new hero's into topics array
+		topics.push(inputHero);
+
+		console.log(topics);
+
+		$("#buttons").empty();
+
+		clickButton();
+
+	});
+
+  });
+</script>
+
+</body>
+</html>
